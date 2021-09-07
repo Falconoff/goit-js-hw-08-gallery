@@ -34,12 +34,13 @@ galleryEl.insertAdjacentHTML('beforeend', galleryItemsArray.join(''));
 // --- click on picture, open Lightbox ---
 galleryEl.addEventListener('click', e => {
   e.preventDefault();
-  // console.log(e.target);
+  console.log(e.target);
 
   if (e.target.nodeName !== 'IMG') {
     return;
   }
 
+  // ===== function "show Modal" ======================
   lightbox.classList.add('is-open');
 
   // const lightboxImage = document.querySelector('.lightbox__image');
@@ -47,7 +48,15 @@ galleryEl.addEventListener('click', e => {
   // console.log(e.target.getAttribute('alt'));
   lightboxImage.setAttribute('alt', e.target.getAttribute('alt'));
 
-  window.addEventListener('keydown', onEscPress);
+  window.addEventListener(
+    'keydown',
+    onEscPress,
+    onRightArrowPress,
+    onLeftArrowPress,
+  );
+  // window.addEventListener('keydown', onRightArrowPress);
+  // window.addEventListener('keydown', onLeftArrowPress);
+  // ---------- end "show Modal" ----------------------------
 });
 
 // --- click Close Lightbox Button
@@ -64,7 +73,14 @@ function closeLightbox() {
   lightboxImage.setAttribute('src', '');
   lightboxImage.setAttribute('alt', '');
 
-  window.removeEventListener('keydown', onEscPress);
+  window.removeEventListener(
+    'keydown',
+    onEscPress,
+    onRightArrowPress,
+    onLeftArrowPress,
+  );
+  // window.removeEventListener('keydown', onRightArrowPress);
+  // window.removeEventListener('keydown', onLeftArrowPress);
 }
 
 // --- click on overlay ---
@@ -76,9 +92,28 @@ lightboxOverlay.addEventListener('click', () => {
 
 // --- click on ESC button ---
 function onEscPress(e) {
-  // window.addEventListener('keydown', e => {
   console.log(e);
   if (e.code === 'Escape') {
     closeLightbox();
   }
 }
+
+// --- click on Right Arrow button ---
+function onRightArrowPress(e) {
+  console.log(e);
+  if (e.code === 'ArrowRight') {
+    console.log('ArrowRight click');
+  }
+}
+
+// --- click on Right Arrow button ---
+function onLeftArrowPress(e) {
+  console.log(e);
+  if (e.code === 'ArrowLeft') {
+    console.log('ArrowLeft click');
+  }
+}
+
+// window.addEventListener('keydown', e => {
+//   console.log(e);
+// });
