@@ -1,4 +1,4 @@
-import galleryItems from '../app.js';
+import galleryItemsArray from '../app.js';
 // console.log(galleryItems);
 
 const galleryEl = document.querySelector('.js-gallery');
@@ -8,9 +8,11 @@ const closeLightboxBtn = document.querySelector(
 );
 const lightboxImage = document.querySelector('.lightbox__image');
 
+let indexOfCurrentImg = 0;
+
 // --- create gallery ---
-const galleryItemsArray = galleryItems.map(
-  ({ preview, original, description }) => {
+const galleryItemsMarkupArray = galleryItemsArray.map(
+  ({ preview, original, description }, index) => {
     // console.log(description);
     return `<li class="gallery__item">
     <a
@@ -21,20 +23,21 @@ const galleryItemsArray = galleryItems.map(
         class="gallery__image"
         src="${preview}"
         data-source="${original}"
+        data-index="${index}"
         alt="${description}"
       />
     </a>
   </li>`;
   },
 );
-// console.log(galleryItemsArray.join(''));
+// console.log(galleryItemsMarkupArray.join(''));
 
-galleryEl.insertAdjacentHTML('beforeend', galleryItemsArray.join(''));
+galleryEl.insertAdjacentHTML('beforeend', galleryItemsMarkupArray.join(''));
 
 // --- click on picture, open Lightbox ---
 galleryEl.addEventListener('click', e => {
   e.preventDefault();
-  console.log(e.target);
+  console.log(e);
 
   if (e.target.nodeName !== 'IMG') {
     return;
@@ -48,14 +51,10 @@ galleryEl.addEventListener('click', e => {
   // console.log(e.target.getAttribute('alt'));
   lightboxImage.setAttribute('alt', e.target.getAttribute('alt'));
 
-  window.addEventListener(
-    'keydown',
-    onEscPress,
-    onRightArrowPress,
-    onLeftArrowPress,
-  );
-  // window.addEventListener('keydown', onRightArrowPress);
-  // window.addEventListener('keydown', onLeftArrowPress);
+  findIndexOfCurrentImg();
+  window.addEventListener('keydown', onEscPress);
+  window.addEventListener('keydown', onRightArrowPress);
+  window.addEventListener('keydown', onLeftArrowPress);
   // ---------- end "show Modal" ----------------------------
 });
 
@@ -73,14 +72,9 @@ function closeLightbox() {
   lightboxImage.setAttribute('src', '');
   lightboxImage.setAttribute('alt', '');
 
-  window.removeEventListener(
-    'keydown',
-    onEscPress,
-    onRightArrowPress,
-    onLeftArrowPress,
-  );
-  // window.removeEventListener('keydown', onRightArrowPress);
-  // window.removeEventListener('keydown', onLeftArrowPress);
+  window.removeEventListener('keydown', onEscPress);
+  window.removeEventListener('keydown', onRightArrowPress);
+  window.removeEventListener('keydown', onLeftArrowPress);
 }
 
 // --- click on overlay ---
@@ -103,7 +97,11 @@ function onRightArrowPress(e) {
   console.log(e);
   if (e.code === 'ArrowRight') {
     console.log('ArrowRight click');
+    // indexOfCurrentImg = findIndexOfCurrentImg();
+    // console.log('indexOfCurrentImg:', indexOfCurrentImg);
+    console.log('indexOfCurrentImg--2:', indexOfCurrentImg);
   }
+  // console.log('indexOfCurrentImg:', indexOfCurrentImg);
 }
 
 // --- click on Right Arrow button ---
@@ -111,8 +109,29 @@ function onLeftArrowPress(e) {
   console.log(e);
   if (e.code === 'ArrowLeft') {
     console.log('ArrowLeft click');
+    // indexOfCurrentImg = findIndexOfCurrentImg();
+    console.log('indexOfCurrentImg--2:', indexOfCurrentImg);
+
+    // console.log('indexOfCurrentImg:', indexOfCurrentImg);
   }
+  // console.log('indexOfCurrentImg:', indexOfCurrentImg);
 }
+
+function findIndexOfCurrentImg() {
+  const srcOfCurrentImg = lightboxImage.getAttribute('src');
+  console.log('srcOfCurrentImg:', srcOfCurrentImg);
+
+  galleryItemsArray.find((item, index) => {
+    if (item.original === srcOfCurrentImg) {
+      console.log('I find index:', index);
+      indexOfCurrentImg = index;
+      console.log('indexOfCurrentImg:', indexOfCurrentImg);
+
+      // return index;
+    }
+  });
+}
+console.log('indexOfCurrentImg--2:', indexOfCurrentImg);
 
 // window.addEventListener('keydown', e => {
 //   console.log(e);
