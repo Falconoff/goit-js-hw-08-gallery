@@ -32,7 +32,7 @@ const galleryItemsMarkupArray = galleryItemsArray.map(
 );
 // console.log(galleryItemsMarkupArray.join(''));
 
-galleryEl.insertAdjacentHTML('beforeend', galleryItemsMarkupArray.join(''));
+galleryEl.innerHTML = galleryItemsMarkupArray.join('');
 
 // --- click on picture, open Lightbox ---
 galleryEl.addEventListener('click', e => {
@@ -43,7 +43,7 @@ galleryEl.addEventListener('click', e => {
     return;
   }
 
-  // ===== function "show Modal" ======================
+  // ===== function "show Lightbox" ======================
   lightbox.classList.add('is-open');
 
   // const lightboxImage = document.querySelector('.lightbox__image');
@@ -100,6 +100,7 @@ function onRightArrowPress(e) {
     // indexOfCurrentImg = findIndexOfCurrentImg();
     // console.log('indexOfCurrentImg:', indexOfCurrentImg);
     console.log('indexOfCurrentImg--2:', indexOfCurrentImg);
+    showNextImg(indexOfCurrentImg);
   }
   // console.log('indexOfCurrentImg:', indexOfCurrentImg);
 }
@@ -112,7 +113,7 @@ function onLeftArrowPress(e) {
     // indexOfCurrentImg = findIndexOfCurrentImg();
     console.log('indexOfCurrentImg--2:', indexOfCurrentImg);
 
-    // console.log('indexOfCurrentImg:', indexOfCurrentImg);
+    showPrevImg(indexOfCurrentImg, galleryItemsArray.length - 1);
   }
   // console.log('indexOfCurrentImg:', indexOfCurrentImg);
 }
@@ -136,3 +137,37 @@ console.log('indexOfCurrentImg--2:', indexOfCurrentImg);
 // window.addEventListener('keydown', e => {
 //   console.log(e);
 // });
+
+function showNextImg(index) {
+  console.log('f.showNextImg received index=', index);
+  // if (index >= galleryItemsArray.length - 1) {
+  //   index = 0;
+  // } else {
+  //   index += 1;
+  // }
+  index = index >= galleryItemsArray.length - 1 ? 0 : index + 1;
+  console.log('new index=', index);
+  showPicture(
+    galleryItemsArray[index].original,
+    galleryItemsArray[index].description,
+  );
+  indexOfCurrentImg = index;
+}
+
+function showPrevImg(index, maxIndex) {
+  console.log('f.showPrevImg received index=', index);
+  index = index === 0 ? maxIndex : index - 1;
+  console.log('new index=', index);
+  showPicture(
+    galleryItemsArray[index].original,
+    galleryItemsArray[index].description,
+  );
+  indexOfCurrentImg = index;
+}
+
+function showPicture(src, alt) {
+  lightboxImage.setAttribute('src', src);
+  lightboxImage.setAttribute('alt', alt);
+}
+// showPicture(galleryItemsArray[2].original, galleryItemsArray[2].description);
+// console.log(galleryItemsArray[2].description);
