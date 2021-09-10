@@ -36,14 +36,16 @@ galleryEl.innerHTML = createGalleryMarkup(galleryItemsArray);
 // ------------------------------------------------------------
 
 // --- click on picture, open Lightbox ---
-galleryEl.addEventListener('click', e => {
+galleryEl.addEventListener('click', onOpenLightbox);
+
+function onOpenLightbox(e) {
   e.preventDefault();
 
   if (e.target.nodeName !== 'IMG') {
     return;
   }
   showLightbox(e);
-});
+}
 
 function showLightbox(evt) {
   lightbox.classList.add('is-open');
