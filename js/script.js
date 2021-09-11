@@ -1,16 +1,19 @@
 import galleryItemsArray from '../app.js';
 
 const galleryEl = document.querySelector('.js-gallery');
-const lightbox = document.querySelector('.js-lightbox');
-const lightboxOverlay = document.querySelector('.lightbox__overlay');
+const lightboxEL = document.querySelector('.js-lightbox');
+const lightboxOverlayEl = document.querySelector('.lightbox__overlay');
 const closeLightboxBtn = document.querySelector(
   'button[data-action="close-lightbox"]',
 );
-const lightboxImage = document.querySelector('.lightbox__image');
+const lightboxImageEl = document.querySelector('.lightbox__image');
 
 let indexOfCurrentImg = 0;
 
-// ============ create gallery ===========================
+galleryEl.innerHTML = createGalleryMarkup(galleryItemsArray);
+galleryEl.addEventListener('click', onOpenLightbox);
+closeLightboxBtn.addEventListener('click', onCloseLightbox);
+lightboxOverlayEl.addEventListener('click', onCloseLightbox);
 
 function createGalleryMarkup(array) {
   return array
@@ -32,90 +35,75 @@ function createGalleryMarkup(array) {
     .join('');
 }
 
-galleryEl.innerHTML = createGalleryMarkup(galleryItemsArray);
-// ------------------------------------------------------------
-
-// --- click on picture, open Lightbox ---
-galleryEl.addEventListener('click', onOpenLightbox);
-
 function onOpenLightbox(e) {
   e.preventDefault();
-
   if (e.target.nodeName !== 'IMG') {
     return;
   }
   showLightbox(e);
 }
 
+function onCloseLightbox() {
+  lightboxEL.classList.remove('is-open');
+  setImgAttributes('', '');
+  window.removeEventListener('keydown', onKeyPress);
+}
+
 function showLightbox(evt) {
-  lightbox.classList.add('is-open');
-  lightboxImage.setAttribute('src', evt.target.dataset.source);
-  lightboxImage.setAttribute('alt', evt.target.getAttribute('alt'));
-
-  indexOfCurrentImg = findIndexOfCurrentImg();
-
+  lightboxEL.classList.add('is-open');
+  setImgAttributes(evt.target.dataset.source, evt.target.getAttribute('alt'));
+  findIndexOfCurrentImg(evt.target.dataset.source);
   window.addEventListener('keydown', onKeyPress);
+}
+
+function setImgAttributes(src, alt) {
+  lightboxImageEl.setAttribute('src', src);
+  lightboxImageEl.setAttribute('alt', alt);
+}
+
+function findIndexOfCurrentImg(srcOfCurrentImg) {
+  galleryItemsArray.forEach(item => {
+    if (item.original === srcOfCurrentImg) {
+      indexOfCurrentImg = galleryItemsArray.indexOf(item);
+    }
+  });
 }
 
 function onKeyPress(e) {
   switch (e.code) {
     case 'Escape':
-      closeLightbox();
+      onCloseLightbox();
       break;
     case 'ArrowRight':
-      showNextImg(galleryItemsArray, indexOfCurrentImg);
+      calcNextIndex();
+      showNewImg();
       break;
     case 'ArrowLeft':
-      showPrevImg(galleryItemsArray, indexOfCurrentImg);
+      calcPrevIndex();
+      showNewImg();
       break;
     default:
       break;
   }
 }
 
-// --- click Close Lightbox Button
-closeLightboxBtn.addEventListener('click', () => {
-  closeLightbox();
-});
-
-function closeLightbox() {
-  lightbox.classList.remove('is-open');
-
-  lightboxImage.setAttribute('src', '');
-  lightboxImage.setAttribute('alt', '');
-
-  window.removeEventListener('keydown', onKeyPress);
+function calcNextIndex() {
+  indexOfCurrentImg =
+    indexOfCurrentImg >= galleryItemsArray.length - 1
+      ? 0
+      : indexOfCurrentImg + 1;
 }
 
-// --- click on overlay ---
-lightboxOverlay.addEventListener('click', () => {
-  closeLightbox();
-});
-
-function findIndexOfCurrentImg() {
-  const srcOfCurrentImg = lightboxImage.getAttribute('src');
-  let currentIndex;
-  galleryItemsArray.find((item, index) => {
-    if (item.original === srcOfCurrentImg) {
-      return (currentIndex = index);
-    }
-  });
-  return currentIndex;
+function calcPrevIndex() {
+  indexOfCurrentImg =
+    indexOfCurrentImg === 0
+      ? galleryItemsArray.length - 1
+      : indexOfCurrentImg - 1;
 }
 
-function showNextImg(array, index) {
-  index = index >= array.length - 1 ? 0 : index + 1;
-  changeLightboxImgAttributes(array, index);
-  indexOfCurrentImg = index;
-}
-
-function showPrevImg(array, index) {
-  index = index === 0 ? array.length - 1 : index - 1;
-  changeLightboxImgAttributes(array, index);
-  indexOfCurrentImg = index;
-}
-
-function changeLightboxImgAttributes(array, index) {
-  lightboxImage.setAttribute('src', array[index].original);
-  lightboxImage.setAttribute('alt', array[index].description);
+function showNewImg() {
+  setImgAttributes(
+    galleryItemsArray[indexOfCurrentImg].original,
+    galleryItemsArray[indexOfCurrentImg].description,
+  );
 }
